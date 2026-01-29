@@ -1,5 +1,7 @@
-from space_network_lib import TemporalInterferenceError, DataCorruptedError
+from space_network_lib import TemporalInterferenceError, DataCorruptedError, LinkTerminatedError, CommsError, OutOfRangeError
 import time
+class BrokenConnectionError(CommsError):
+    pass
 def attempt_transmission(packet: "Packet", network: "Network"):
     try:
         network.send(packet)
@@ -10,3 +12,9 @@ def attempt_transmission(packet: "Packet", network: "Network"):
     except DataCorruptedError:
         print("Data corrupted, retrying...")
         attempt_transmission(packet, network)
+    except LinkTerminatedError:
+        print("link lost")
+        raise BrokenConnectionError()
+    except OutOfRangeError:
+        print("Target out of range")
+        raise BrokenConnectionError()
